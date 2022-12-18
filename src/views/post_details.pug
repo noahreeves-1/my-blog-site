@@ -1,0 +1,23 @@
+extends layout 
+
+block content
+  div(class="max-w-xl mx-auto")#blogContainer 
+    h1(class="my-4 text-2xl font-bold")= post.title 
+    p= post.content
+    if user
+      div(class="bg-gray-200 p-4 mt-4")
+        form(method="POST" action="" class="flex flex-wrap justify-end")
+          #commentContainer 
+            label(for="comment" class="font-bold") Comments
+            textarea#comment(name="comment", cols="62", rows="4", class="rounded-md mt-2", required="true")
+          button(type="submit" class=" mt-4 py-2 px-4 text-white bg-cyan-800 rounded-md") Submit Comment
+    else
+      a(href="/users/login") 
+        p(class="my-4 text-center text-blue-500") Log in to comment on this post!
+    div(class="font-bold") Comments
+    div(class="mb-10")#allComments
+      for comment in comments 
+        div(class="bg-gray-200 max-w-xl mx-auto mt-4 p-4")
+          p= comment.commentBody
+          p(class="text-sm font-bold mt-2")= comment.author.name
+            span(class="font-normal")  / #{comment.date_clean}

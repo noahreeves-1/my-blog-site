@@ -1,0 +1,12 @@
+extends layout
+
+block content 
+  h1(class="text-slate-700 text-2xl text-center py-4")= title
+  if posts
+    for post in posts
+      a(href=`/posts/${post._id}`)
+        div(class="max-w-xl mx-auto bg-gray-200 my-4 rounded-md py-4 px-4")#postContainer 
+          h2(class="text-xl font-bold")= post.title
+          p(class="mt-2 overflow-hidden overflow-ellipsis whitespace-nowrap")= post.content
+          p(class="text-sm mt-2 font-bold")= post.author.name 
+            span(class="font-normal")= ` / ${post.date_clean}`

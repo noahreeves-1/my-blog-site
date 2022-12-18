@@ -1,0 +1,16 @@
+extends layout 
+
+block content 
+  h1(class="text-center text-2xl my-4")= title
+  div#formWrapper(class="flex justify-center mt-4")
+    div#formContainer(class="w-64 py-4 px-4 bg-gray-300 rounded-md")
+      form(method="POST" action="" class="flex flex-wrap gap-4")
+        div#usernameContainer
+          label(for="username" class="") Username:
+          input#username(type="text" name="username" placeholder="Username" required="true" class="mt-2 w-56 rounded-sm")
+        div#passwordContainer
+          label(for="password") Password:
+          input#password(type="password" name="password" placeholder="Password" required="true" class="mt-2 w-56 rounded-sm")
+        button(type="submit" class="mx-auto bg-cyan-800 text-white px-4 py-2 rounded-md") Log In
+  a(href="/users/signup")
+    p(class="w-20 py-2 mt-4 mx-auto text-center bg-cyan-800 text-white rounded-md") Sign Up

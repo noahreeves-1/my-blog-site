@@ -1,0 +1,38 @@
+extends layout 
+
+block content 
+  h1(class="text-center text-2xl my-4")= title
+  if message 
+    p(class="text-center text-red-500")= message
+  div#formWrapper(class="flex justify-center mt-4")
+    div#formContainer(class="w-64 py-4 px-4 bg-gray-300 rounded-md")
+      form(method="POST" action="" class="flex flex-wrap gap-4")
+        div#firstNameContainer
+          label(for="first_name") First Name:
+          input#first_name(class=" w-56 rounded-md" type='text' name='first_name' placeholder="Noah" required='true' minLength=2 value=(first_name === undefined ? "" : first_name))
+        div#lastNameContainer
+          label(for="last_name") Last Name:
+          input#last_Name(class=" w-56 rounded-md" type='text' name='last_name' placeholder="Reeves" required='true' minLength=2 value=(last_name === undefined ? "" : last_name))
+        div#emailContainer
+          label(for="email") Email:
+          input#email(class=" w-56 rounded-md" type='text' name='email' placeholder="email@mail.com" required='true' minLength=2 value=(email === undefined ? "" : email))
+        div#usernameContainer
+          label(for="username" class="") Username:
+          input#username(class=" w-56 rounded-sm" type="text" name="username" placeholder="Username" required="true" minLength=3 value=(username === undefined ? "" : username))
+        div#passwordContainer
+          label(for="password") Password:
+          input#password(class=" w-56 rounded-sm" type="password" name="password" required="true" minLength=8 pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,16}$")
+        div#confirmPasswordContainer
+          label(for="confirm_password") Confirm Password:
+          input#confirm_password(class=" w-56 rounded-sm" type="password" name="confirm_password" required="true")
+        if errors 
+          ul 
+            for error in errors 
+              li(class="text-red-500 text-sm")= error.msg
+        ul(class='text-sm text-gray-600')
+          li.pw-requirement At least 8 characters in length
+          li.pw-requirement At least 1 lowercase letter
+          li.pw-requirement At least 1 uppercase letter
+          li.pw-requirement At least 1 number
+          li.pw-requirement At least 1 special character
+        button(type="submit" class="mx-auto bg-cyan-800 text-white px-4 py-2 rounded-md") Create

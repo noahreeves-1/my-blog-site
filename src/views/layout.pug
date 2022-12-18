@@ -1,0 +1,47 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0")
+    title= title
+    link(rel='stylesheet', href='/styles/style.css')
+  body
+    nav(class='mx-auto py-4 px-4 bg-slate-800 text-white')
+      if user 
+        if user.admin
+          div(class="mx-auto max-w-xl flex justify-between")
+            a(href="/" class="font-bold")
+              p NHK
+            div(class="flex gap-4")
+              a(href="/users/logout") 
+                p Log Out
+              a(href="/posts/create")
+                p Create Post
+              a(href="/about")
+                p About
+              a(href="/contact") 
+                p Contact
+        else 
+          div(class="mx-auto max-w-xl flex justify-between")
+            a(href="/" class="font-bold")
+              p NHK
+            div(class="flex gap-4")
+              a(href="/users/logout") 
+                p Log Out
+              a(href="/about")
+                p About
+              a(href="/contact") 
+                p Contact
+      else 
+        div(class="mx-auto max-w-xl flex justify-between")
+          a(href="/" class="font-bold")
+            p NHK
+          div(class="flex gap-4")
+            a(href="/users/login")
+              p Log In
+            a(href="/about")
+              p About
+            a(href="/contact") 
+              p Contact
+  block content
