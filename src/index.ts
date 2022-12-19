@@ -85,12 +85,12 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 // * route middleware
 app.use("/", indexRouter);
+app.use("/users", usersRouter);
 app.use(
-  "/users",
+  "/posts",
   passport.authenticate("jwt", { session: false }),
-  usersRouter
+  postsRouter
 );
-app.use("/posts", postsRouter);
 
 // ! ERROR HANDLING
 app.use(errorMiddleware);

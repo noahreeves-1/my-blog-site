@@ -1,6 +1,7 @@
 import express from "express";
 import * as indexController from "../controllers/indexController";
-import * as userController from "../controllers/userController";
+import * as postController from "../controllers/postController";
+import * as commentController from "../controllers/commentController";
 
 const router = express.Router();
 
@@ -10,12 +11,11 @@ router.get("/about", indexController.about_get);
 
 router.get("/contact", indexController.contact_get);
 
-router.get("/users/logout", userController.logout_get);
-
 router.get("/login", indexController.login_get);
 router.post("/login", indexController.login_post);
 
-router.get("/signup", userController.user_signup_get);
-router.post("/signup", userController.user_signup_post);
+router.get("/:id", postController.get_post_get);
+// post comment
+router.post("/:id", commentController.comment_post);
 
 export default router;
