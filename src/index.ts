@@ -36,7 +36,7 @@ db.on("error", console.error.bind(console, "MongoDB connection error"));
 
 // * initialize Express app
 const app: Express = express();
-const port: string | undefined = process.env.PORT;
+// const port: string | undefined = process.env.PORT;
 
 // * set views engine
 const viewsDir = path.join(__dirname, "../src/views");
@@ -96,9 +96,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 app.use(errorMiddleware);
 const errorHandler = new ErrorHandler(logger);
 
-app.listen(port, async () => {
-  logger.info(`Server is listening on port ${port}!`);
-});
+// app.listen(port, async () => {
+//   logger.info(`Server is listening on port ${port}!`);
+// });
 
 process.on("uncaughtException", async (error: Error) => {
   await errorHandler.handleError(error);
