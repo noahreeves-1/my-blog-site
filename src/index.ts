@@ -77,6 +77,12 @@ app.use(cookieParser());
 const staticDir = path.join(__dirname, "../src/public");
 app.use(express.static(staticDir));
 
+// * local user middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.locals.currentUser = req.user;
+  next();
+});
+
 // * route middleware
 app.use("/", indexRouter);
 app.use(
@@ -85,12 +91,6 @@ app.use(
   usersRouter
 );
 app.use("/posts", postsRouter);
-
-// * local user middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  res.locals.currentUser = req.user;
-  next();
-});
 
 // ! ERROR HANDLING
 app.use(errorMiddleware);

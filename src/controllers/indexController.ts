@@ -39,7 +39,7 @@ export const login_get = (req: Request, res: Response) => {
 };
 
 export const login_post = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate("local", { session: false }, (err, user) => {
+  passport.authenticate("local", (err, user) => {
     if (err || !user) {
       return res.status(400).json({
         message: "Something is not right",
@@ -47,15 +47,16 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    req.login(user, { session: false }, async (err) => {
+    req.login(user, async (err) => {
       if (err) {
         res.send(err);
       }
 
       // generate a signed json web token witht he contents of the user object
       // and return it in the response
-      const payload = { _id: user._id };
-      jwt.sign(payload, `${process.env.SECRET_KEY}`);
+      const token = jwt.sign({ user }, `${process.env.SECRET_KEY}`, {
+        expiresIn: "10s",
+      });
 
       Post.find()
         .populate("author")
@@ -66,6 +67,7 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
             title: "Welcome!",
             posts: allPosts,
             user: req.user,
+            token,
           });
         });
     });

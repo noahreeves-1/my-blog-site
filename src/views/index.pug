@@ -10,3 +10,5 @@ block content
           p(class="mt-2 overflow-hidden overflow-ellipsis whitespace-nowrap")= post.content
           p(class="text-sm mt-2 font-bold")= post.author.name 
             span(class="font-normal")= ` / ${post.date_clean}`
+  if user 
+    p= user.username
