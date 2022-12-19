@@ -1,5 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import { Post } from "../models/post";
+import passport from "passport";
+import jwt from "jsonwebtoken";
 
 export const index_get = (req: Request, res: Response, next: NextFunction) => {
   Post.find()
@@ -27,4 +29,45 @@ export const contact_get = (req: Request, res: Response) => {
     title: "Let's Connect",
     user: req.user,
   });
+};
+
+export const login_get = (req: Request, res: Response) => {
+  res.render("log_in", {
+    title: "Log In",
+    user: req.user,
+  });
+};
+
+export const login_post = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate("local", { session: false }, (err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        message: "Something is not right",
+        user,
+      });
+    }
+
+    req.login(user, { session: false }, async (err) => {
+      if (err) {
+        res.send(err);
+      }
+
+      // generate a signed json web token witht he contents of the user object
+      // and return it in the response
+      const payload = { _id: user._id };
+      jwt.sign(payload, `${process.env.SECRET_KEY}`);
+
+      Post.find()
+        .populate("author")
+        .exec((err, allPosts) => {
+          if (err) return next(err);
+
+          res.render("index", {
+            title: "Welcome!",
+            posts: allPosts,
+            user: req.user,
+          });
+        });
+    });
+  })(req, res, next);
 };

@@ -26,7 +26,7 @@ import postsRouter from "./routes/posts";
 dotenv.config();
 
 //* passportjs
-import "./controllers/passportController";
+import "./auth/passport";
 
 // * setup database connection
 const mongoDB = process.env.MONGODB_URI;
@@ -44,7 +44,13 @@ app.set("views", viewsDir);
 app.set("view engine", "pug");
 
 //* Passport middleware
-app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
+app.use(
+  session({
+    secret: `${process.env.SECRET_KEY}`,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -73,7 +79,11 @@ app.use(express.static(staticDir));
 
 // * route middleware
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  usersRouter
+);
 app.use("/posts", postsRouter);
 
 // * local user middleware

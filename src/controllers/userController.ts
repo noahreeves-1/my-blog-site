@@ -2,50 +2,19 @@
 import { NextFunction, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { HydratedDocument } from "mongoose";
-import passport from "passport";
 import bcrypt from "bcrypt";
-// import jwt from "jsonwebtoken";
 
 //* custom modules
 import { User, IUser } from "../models/user";
-
-import { IUserRequest } from "../types";
+// import { IUserRequest } from "../types";
 
 //* LOG IN
-export const login_get = (req: Request, res: Response) => {
-  res.render("log_in", {
-    title: "Log In",
-    user: req.user,
-  });
-};
 
-// export const login_post = (req: Request, res: Response) => {
-//   passport.authenticate("local", { session: false }, (err, user) => {
-//     if (err || !user) {
-//       return res.status(400).json({
-//         message: "Something is not right",
-//         user,
-//       });
-//     }
-
-//     req.login(user, { session: false }, (err) => {
-//       if (err) {
-//         res.send(err);
-//       }
-
-//       // generate a signed json web token witht he contents of the user object
-//       // and return it in the response
-//       const token = jwt.sign(user, "polar_bears");
-//       return res.json({ user, token });
-//     });
-//   })(req, res);
-// };
-
-export const login_post = passport.authenticate("local", {
-  successRedirect: "/",
-  failureRedirect: "/users/login",
-  failureMessage: "Username or password is incorrect",
-});
+// export const login_post = passport.authenticate("local", {
+//   successRedirect: "/",
+//   failureRedirect: "/users/login",
+//   failureMessage: "Username or password is incorrect",
+// });
 
 export const logout_get = (req: Request, res: Response, next: NextFunction) => {
   req.logOut((err) => {
@@ -197,7 +166,7 @@ export const admin_code_post = [
       }
       return true;
     }),
-  (req: IUserRequest, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -209,17 +178,19 @@ export const admin_code_post = [
       return;
     }
 
-    User.findOneAndUpdate(
-      { username: req.user?.username },
-      { admin: true },
-      (err: Error, user: IUser) => {
-        if (err) return next(err);
+    if (req.user) {
+      User.findOneAndUpdate(
+        { username: req.user.username },
+        { admin: true },
+        (err: Error, user: IUser) => {
+          if (err) return next(err);
 
-        res.render("index", {
-          title: "Welcome",
-          user,
-        });
-      }
-    );
+          res.render("index", {
+            title: "Welcome",
+            user,
+          });
+        }
+      );
+    }
   },
 ];
