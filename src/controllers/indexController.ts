@@ -55,7 +55,7 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
       // generate a signed json web token witht he contents of the user object
       // and return it in the response
       const token = jwt.sign({ user }, `${process.env.SECRET_KEY}`, {
-        expiresIn: "10s",
+        expiresIn: "24h",
       });
 
       Post.find()
