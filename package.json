@@ -7,7 +7,7 @@
   "author": "noah kim <heanokim@gmail.com>",
   "license": "MIT",
   "engines": {
-    "node": "17.3.0"
+    "node": "16.18.1"
   },
   "scripts": {
     "lint": "eslint . --ext .js,.ts .",
