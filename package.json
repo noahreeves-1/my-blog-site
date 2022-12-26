@@ -6,9 +6,6 @@
   "repository": "https://github.com/noahreeves-1/my-blog-site.git",
   "author": "noah kim <heanokim@gmail.com>",
   "license": "MIT",
-  "engines": {
-    "node": "16.18.1"
-  },
   "scripts": {
     "lint": "eslint . --ext .js,.ts .",
     "build": "tsc",

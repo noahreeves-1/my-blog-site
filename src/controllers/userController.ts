@@ -3,6 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { HydratedDocument } from "mongoose";
 import bcrypt from "bcrypt";
+import passport from "passport";
+import jwt from "jsonwebtoken";
 
 //* custom modules
 import { User, IUser } from "../models/user";
@@ -16,6 +18,43 @@ import { User, IUser } from "../models/user";
 //   failureMessage: "Username or password is incorrect",
 // });
 
+export const login_get = (req: Request, res: Response) => {
+  res.json({
+    user: req.user,
+    test: "hello",
+  });
+};
+
+export const login_post = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate("local", (err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        message: "Something is not right",
+        user,
+      });
+    }
+
+    req.login(user, async (err) => {
+      if (err) {
+        res.send(err);
+      }
+
+      // generate a signed json web token witht he contents of the user object
+      // and return it in the response
+      const token = jwt.sign({ user }, `${process.env.SECRET_KEY}`, {
+        expiresIn: "24h",
+      });
+
+      return res
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .status(200)
+        .json({ user, token });
+    });
+  })(req, res, next);
+};
+
 export const logout_get = (req: Request, res: Response, next: NextFunction) => {
   req.logOut((err) => {
     if (err) {
@@ -27,8 +66,7 @@ export const logout_get = (req: Request, res: Response, next: NextFunction) => {
 
 //* SIGN UP
 export const user_signup_get = (req: Request, res: Response) => {
-  res.render("user_form", {
-    title: "Create User",
+  res.json({
     user: req.user,
   });
 };
@@ -67,10 +105,11 @@ export const user_signup_post = [
     }),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
+    console.log({ errors: errors.array() });
 
     // there's an error
     if (!errors.isEmpty()) {
-      res.render("user_form", {
+      return res.render("user_form", {
         title: "Create User",
         first_name: req.body.first_name,
         last_name: req.body.last_name,
@@ -94,7 +133,7 @@ export const user_signup_post = [
           (err: Error, user: IUser) => {
             if (err) return next(err);
             if (user) {
-              res.render("user_form", {
+              return res.render("user_form", {
                 title: "Create User",
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
@@ -102,8 +141,6 @@ export const user_signup_post = [
                 email: req.body.email,
                 message: `Username: ${user.username} found`,
               });
-
-              return;
             }
             // no username found with same username
             // search db for email
@@ -112,7 +149,7 @@ export const user_signup_post = [
               (err: Error, user: IUser) => {
                 if (err) return next(err);
                 if (user) {
-                  res.render("user_form", {
+                  return res.render("user_form", {
                     title: "Create User",
                     first_name: req.body.first_name,
                     last_name: req.body.last_name,
@@ -120,8 +157,6 @@ export const user_signup_post = [
                     email: req.body.email,
                     message: "Email already exists",
                   });
-
-                  return;
                 }
                 // no email found with same email
                 const newUser: HydratedDocument<IUser> = new User({
@@ -137,7 +172,7 @@ export const user_signup_post = [
                   if (err) {
                     return next(err);
                   }
-                  res.redirect("/");
+                  return res.json({ message: "User created!", user: newUser });
                 });
 
                 return;

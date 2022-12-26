@@ -5,10 +5,7 @@ import { Comment } from "../models/comment";
 import { HydratedDocument } from "mongoose";
 
 export const create_post_get = (req: Request, res: Response) => {
-  res.render("post_form", {
-    title: "Create New Post",
-    user: req.user,
-  });
+  res.status(200);
 };
 
 export const create_post_post = [

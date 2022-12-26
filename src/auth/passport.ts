@@ -52,7 +52,7 @@ passport.use(
     },
     async (jwtPayload, cb) => {
       // find user in db
-      return await User.findById(jwtPayload.id)
+      return await User.findById(jwtPayload.sub)
         .then((user) => {
           if (user) {
             return cb(null, user);
