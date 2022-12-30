@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from "express";
 
 export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.sendStatus(401);
+  if (!authHeader) return res.sendStatus(401); // Unauthorized
   console.log(authHeader); // Bearer token
 
   const token = authHeader.split(" ")[1];
