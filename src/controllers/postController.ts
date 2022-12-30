@@ -4,8 +4,28 @@ import { Post, IPost } from "../models/post";
 import { Comment } from "../models/comment";
 import { HydratedDocument } from "mongoose";
 
+export const get_post_get = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  Post.findById(req.params.id)
+    .populate("author")
+    .exec((err, post) => {
+      if (err) return next(err);
+
+      Comment.find({ blogPost: req.params.id })
+        .populate("author")
+        .exec((err, comments) => {
+          if (err) return next(err);
+
+          return res.status(200).json({ post, comments });
+        });
+    });
+};
+
 export const create_post_get = (req: Request, res: Response) => {
-  res.status(200);
+  res.status(200).json({ message: "create_post_get" });
 };
 
 export const create_post_post = [
@@ -41,28 +61,3 @@ export const create_post_post = [
     });
   },
 ];
-
-export const get_post_get = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  Post.findById(req.params.id)
-    .populate("author")
-    .exec((err, post) => {
-      if (err) return next(err);
-
-      Comment.find({ blogPost: req.params.id })
-        .populate("author")
-        .exec((err, comments) => {
-          if (err) return next(err);
-
-          res.render("post_details", {
-            title: "Post Details",
-            post,
-            comments,
-            user: req.user,
-          });
-        });
-    });
-};

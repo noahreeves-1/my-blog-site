@@ -20,7 +20,7 @@ passport.use(
 
           if (!user) {
             return done(null, false, {
-              message: `User ${user[username]} not found.`,
+              message: `User ${username} not found.`,
             });
           }
 
@@ -48,7 +48,7 @@ passport.use(
   new JWTStrategy(
     {
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-      secretOrKey: `${process.env.SECRET_KEY}`,
+      secretOrKey: `${process.env.ACCESS_SECRET_KEY}`,
     },
     async (jwtPayload, cb) => {
       // find user in db

@@ -14,8 +14,11 @@ import Signup from "./pages/Signup";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Post from "./pages/Post";
+import Admin from "./pages/Admin";
+import Refresh from "./pages/Refresh";
 
 import "./App.css";
+import PostCreate from "./pages/CreatePost";
 
 function App() {
   const [posts, setPosts] = useState([] as any[]);
@@ -43,14 +46,11 @@ function App() {
           <Route path="/users/signup" element={<Signup />}></Route>
           <Route path="/about" element={<About />}></Route>
           <Route path="/contact" element={<Contact />}></Route>
-
-          {posts.map((post) => (
-            <Route
-              path={`/posts/${post._id}`}
-              key={post._id}
-              element={<Post {...post} posts={posts} setPosts={setPosts} />}
-            ></Route>
-          ))}
+          <Route path="/posts/:id" element={<Post />}></Route>
+          <Route path="/refresh" element={<Refresh />}></Route>
+          {/* Protected Routes */}
+          <Route path="/admin" element={<Admin />}></Route>
+          <Route path="/admin/posts/create" element={<PostCreate />}></Route>
         </Routes>
       </Router>
     </>

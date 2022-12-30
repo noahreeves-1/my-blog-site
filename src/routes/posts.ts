@@ -4,12 +4,10 @@ import * as commentController from "../controllers/commentController";
 
 const router = express.Router();
 
-// * posts/create
-router.get("/create", postController.create_post_get);
-router.post("/create", postController.create_post_post);
-
-// * posts/:id
+// * POST DETAILS and COMMENTS for posts/:id
 router.get("/:id", postController.get_post_get);
+
+// * COMMENTS for posts/:id
 router.post("/:id", commentController.comment_post);
 
 export default router;

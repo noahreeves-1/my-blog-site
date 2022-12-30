@@ -7,6 +7,7 @@ export type IUser = {
   email: string;
   password: string;
   admin: boolean;
+  refresh_token: string;
 };
 
 const userSchema: Schema = new Schema<IUser>({
@@ -16,6 +17,7 @@ const userSchema: Schema = new Schema<IUser>({
   email: { type: String, required: true, minlength: 8, maxlength: 100 },
   password: { type: String, required: true, minlength: 8 },
   admin: { type: Boolean, default: false },
+  refresh_token: { type: String },
 });
 
 userSchema.virtual("name").get(function () {

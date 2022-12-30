@@ -8,36 +8,40 @@ function Login(): JSX.Element {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const body = {
-    username,
-    password,
-  };
+  const [errMsg, setErrMsg] = useState("");
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const body = {
+      username,
+      password,
+    };
+
     api
       .post("/users/login", body)
       .then((res) => {
-        console.log(res.data);
+        console.log(res);
         navigate("/");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.error(err);
+        if (err.response.status === 401) {
+          setErrMsg(err.response.data.message);
+        }
+      });
   };
 
   return (
     <div>
-      <div className="text-center text-2xl my-4">Login</div>
+      <h1 className="text-center text-2xl my-4">Login</h1>
+      <p className={errMsg ? "text-center text-red-500" : "hidden"}>{errMsg}</p>
       <div id="formWrapper" className="flex justify-center mt-4">
         <div
           id="formContainer"
           className="w-64 py-4 px-4 bg-gray-300 rounded-md"
         >
-          <form
-            method="POST"
-            action="http://localhost:3001/users/login"
-            onSubmit={submitHandler}
-            className="flex flex-wrap gap-4"
-          >
+          <form onSubmit={submitHandler} className="flex flex-wrap gap-4">
             <div id="usernameContainer">
               <label htmlFor="username">Username: </label>
               <input

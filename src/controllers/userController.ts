@@ -5,6 +5,8 @@ import { HydratedDocument } from "mongoose";
 import bcrypt from "bcrypt";
 import passport from "passport";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 //* custom modules
 import { User, IUser } from "../models/user";
@@ -27,30 +29,73 @@ export const login_get = (req: Request, res: Response) => {
 
 export const login_post = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate("local", (err, user) => {
-    if (err || !user) {
+    if (err) {
       return res.status(400).json({
-        message: "Something is not right",
-        user,
+        message: "Something went wrong...",
+      });
+    }
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Incorrect username or password",
       });
     }
 
     req.login(user, async (err) => {
+      // * LOGIN FAILED
       if (err) {
         res.send(err);
       }
 
-      // generate a signed json web token witht he contents of the user object
+      // * LOGIN SUCCESSFUL
+      // generate a signed json web token with the contents of the user object
       // and return it in the response
-      const token = jwt.sign({ user }, `${process.env.SECRET_KEY}`, {
-        expiresIn: "24h",
-      });
+      const payload = {
+        username: user.username,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        admin: user.admin,
+      };
 
-      return res
-        .cookie("access_token", token, {
-          httpOnly: true,
-        })
-        .status(200)
-        .json({ user, token });
+      const accessToken = jwt.sign(
+        payload,
+        `${process.env.ACCESS_SECRET_KEY}`,
+        {
+          expiresIn: "10m",
+        }
+      );
+
+      const refreshToken = jwt.sign(
+        payload,
+        `${process.env.REFRESH_SECRET_KEY}`,
+        {
+          expiresIn: "1d",
+        }
+      );
+
+      const filter = { username: user.username };
+      const update = { refresh_token: refreshToken };
+
+      // * update refresh token with created refresh token
+      // TODO - problem here
+      await User.findOneAndUpdate(filter, update);
+
+      // res
+      //   .cookie("refresh_token", refreshToken, {
+      //     httpOnly: true,
+      //     maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+      //     domain: "http://localhost:3000",
+      //   })
+      //   .json({ accessToken });
+
+      res.cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      res.json({ accessToken });
     });
   })(req, res, next);
 };
@@ -133,14 +178,17 @@ export const user_signup_post = [
           (err: Error, user: IUser) => {
             if (err) return next(err);
             if (user) {
-              return res.render("user_form", {
-                title: "Create User",
-                first_name: req.body.first_name,
-                last_name: req.body.last_name,
-                username: req.body.username,
-                email: req.body.email,
-                message: `Username: ${user.username} found`,
+              return res.status(409).json({
+                message: `Username: ${user.username} already exists`,
               });
+              // return res.render("user_form", {
+              //   title: "Create User",
+              //   first_name: req.body.first_name,
+              //   last_name: req.body.last_name,
+              //   username: req.body.username,
+              //   email: req.body.email,
+              //   message: `Username: ${user.username} found`,
+              // });
             }
             // no username found with same username
             // search db for email
@@ -149,14 +197,17 @@ export const user_signup_post = [
               (err: Error, user: IUser) => {
                 if (err) return next(err);
                 if (user) {
-                  return res.render("user_form", {
-                    title: "Create User",
-                    first_name: req.body.first_name,
-                    last_name: req.body.last_name,
-                    username: req.body.username,
-                    email: req.body.email,
-                    message: "Email already exists",
+                  return res.status(409).json({
+                    message: `Email: ${user.email} already exists`,
                   });
+                  // return res.render("user_form", {
+                  //   title: "Create User",
+                  //   first_name: req.body.first_name,
+                  //   last_name: req.body.last_name,
+                  //   username: req.body.username,
+                  //   email: req.body.email,
+                  //   message: "Email already exists",
+                  // });
                 }
                 // no email found with same email
                 const newUser: HydratedDocument<IUser> = new User({
@@ -166,6 +217,7 @@ export const user_signup_post = [
                   email: req.body.email,
                   password: hashedPassword,
                   admin: false,
+                  refresh_token: "",
                 });
 
                 newUser.save((err) => {
@@ -186,6 +238,7 @@ export const user_signup_post = [
 ];
 
 export const admin_code_get = (req: Request, res: Response) => {
+  return res.json({ success: "You've been verified!" });
   res.render("admin_code", {
     title: "Enter Code",
   });
@@ -196,7 +249,7 @@ export const admin_code_post = [
     .trim()
     .escape()
     .custom((value: string) => {
-      if (value !== process.env.SECRET_CODE) {
+      if (value !== process.env.ADMIN_CODE) {
         throw new Error("Admin code is incorrect");
       }
       return true;
