@@ -29,7 +29,9 @@ export const handleRefreshToken = (req: Request, res: Response) => {
       }
 
       if (!foundUser) {
-        res.sendStatus(403); // Forbidden
+        res
+          .status(403)
+          .json({ message: "No user found with this refresh token" }); // Forbidden
       }
 
       // ! YouTube method: Dave Gray
@@ -37,6 +39,10 @@ export const handleRefreshToken = (req: Request, res: Response) => {
         refreshToken,
         `${process.env.REFRESH_SECRET_KEY}`
       );
+
+      if (decoded instanceof Error) {
+        throw new Error(`jwt.verify object: ${decoded}`);
+      }
 
       function verifyDecodedToken(data: unknown): asserts data is MyToken {
         // verify decoded token is an Object
@@ -54,7 +60,9 @@ export const handleRefreshToken = (req: Request, res: Response) => {
       verifyDecodedToken(decoded);
 
       if (foundUser.username !== decoded.username) {
-        return res.sendStatus(403);
+        return res.status(403).json({
+          message: "Decoded username did not match username in MongoDB",
+        });
       }
 
       const payload = {
