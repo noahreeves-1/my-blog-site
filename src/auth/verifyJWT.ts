@@ -10,17 +10,6 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
 
   const token = authHeader.split(" ")[1];
 
-  // ! doesn't work
-  //   jwt.verify(token, `${process.env.ACCESS_SECRET_KEY}`, (err, decoded) => {
-  //     if (err) return res.sendStatus(403); // invalid token
-
-  //     console.log(decoded);
-
-  //     // req.user = decoded?.username;
-
-  //     next();
-  //   });
-
   // * trying this
   interface MyToken {
     username: string;

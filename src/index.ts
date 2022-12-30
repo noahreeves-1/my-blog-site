@@ -8,7 +8,7 @@ import session from "express-session";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import cors from "cors";
+// import cors from "cors";
 
 // * custom modules
 import { logger } from "./shared/classes/logger";
@@ -87,14 +87,22 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 // * CORS
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000",
+//     credentials: true,
+//     allowedHeaders: [
+//       "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+//     ],
+//   })
+// );
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
   next();
 });

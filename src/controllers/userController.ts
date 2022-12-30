@@ -81,21 +81,12 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
       // TODO - problem here
       await User.findOneAndUpdate(filter, update);
 
-      // res
-      //   .cookie("refresh_token", refreshToken, {
-      //     httpOnly: true,
-      //     maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-      //     domain: "http://localhost:3000",
-      //   })
-      //   .json({ accessToken });
-
-      res.cookie("refresh_token", refreshToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-      res.json({ accessToken });
+      res
+        .cookie("refresh_token", refreshToken, {
+          httpOnly: true,
+          maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+        })
+        .json({ accessToken });
     });
   })(req, res, next);
 };
