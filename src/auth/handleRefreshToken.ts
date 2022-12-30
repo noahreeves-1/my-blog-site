@@ -33,34 +33,47 @@ export const handleRefreshToken = (req: Request, res: Response) => {
       }
 
       // ! YouTube method: Dave Gray
-      jwt.verify(refreshToken, `${process.env.REFRESH_SECRET_KEY}`),
-        (err: unknown, decoded: MyToken) => {
-          if (err) {
-            return res.sendStatus(403);
-          }
+      const decoded: unknown = jwt.verify(
+        refreshToken,
+        `${process.env.REFRESH_SECRET_KEY}`
+      );
 
-          if (err || foundUser.username !== decoded.username) {
-            return res.sendStatus(403);
-          }
-
-          const payload = {
-            username: decoded.username,
-            first_name: decoded.first_name,
-            last_name: decoded.last_name,
-            email: decoded.email,
-            admin: decoded.admin,
-          };
-
-          const accessToken = jwt.sign(
-            payload,
-            `${process.env.ACCESS_SECRET_KEY}`,
-            {
-              expiresIn: "10m",
-            }
+      function verifyDecodedToken(data: unknown): asserts data is MyToken {
+        // verify decoded token is an Object
+        if (!(data instanceof Object)) {
+          throw new Error("Decoded token error. Token must be an object");
+        }
+        // verify "username" is in decoded token
+        if (!("username" in data)) {
+          throw new Error(
+            "Decoded token error. Missing required field `username`"
           );
+        }
+      }
 
-          res.json({ accessToken });
-        };
+      verifyDecodedToken(decoded);
+
+      if (foundUser.username !== decoded.username) {
+        return res.sendStatus(403);
+      }
+
+      const payload = {
+        username: decoded.username,
+        first_name: decoded.first_name,
+        last_name: decoded.last_name,
+        email: decoded.email,
+        admin: decoded.admin,
+      };
+
+      const accessToken = jwt.sign(
+        payload,
+        `${process.env.ACCESS_SECRET_KEY}`,
+        {
+          expiresIn: "10m",
+        }
+      );
+
+      res.json({ accessToken });
     }
   );
 };
