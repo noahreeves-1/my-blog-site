@@ -16,6 +16,7 @@ import Contact from "./pages/Contact";
 import Post from "./pages/Post";
 import Admin from "./pages/Admin";
 import Refresh from "./pages/Refresh";
+import { Missing } from "./components/Missing";
 
 import "./App.css";
 import PostCreate from "./pages/CreatePost";
@@ -35,7 +36,7 @@ function App() {
   console.log(posts);
 
   return (
-    <>
+    <main>
       <Router>
         <header>
           <Navbar />
@@ -48,12 +49,14 @@ function App() {
           <Route path="/contact" element={<Contact />}></Route>
           <Route path="/posts/:id" element={<Post />}></Route>
           <Route path="/refresh" element={<Refresh />}></Route>
+
           {/* Protected Routes */}
           <Route path="/admin" element={<Admin />}></Route>
           <Route path="/admin/posts/create" element={<PostCreate />}></Route>
+          <Route path="*" element={<Missing />}></Route>
         </Routes>
       </Router>
-    </>
+    </main>
   );
 }
 
