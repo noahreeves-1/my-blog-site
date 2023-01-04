@@ -34,8 +34,7 @@ export const handleLogout = (req: Request, res: Response) => {
           sameSite: "none",
           secure: true,
         })
-        .status(204)
-        .json({ updated_user: foundUser });
+        .status(204);
     }
   );
 };

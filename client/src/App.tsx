@@ -1,11 +1,11 @@
 // * Downloaded libraries
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { AxiosResponse } from "axios";
 import api from "./util/axios";
 
 // * Layouts
 import Navbar from "./layouts/Navbar";
+import { Layout } from "./layouts/Layout";
 
 // * Pages
 import Home from "./pages/Home";
@@ -17,9 +17,14 @@ import Post from "./pages/Post";
 import Admin from "./pages/Admin";
 import Refresh from "./pages/Refresh";
 import { Missing } from "./components/Missing";
+import { CreateRole } from "./pages/CreateRole";
+
+// * Components
+import { RequireAuth } from "./components/RequireAuth";
 
 import "./App.css";
 import PostCreate from "./pages/CreatePost";
+import { Logout } from "./pages/Logout";
 
 function App() {
   const [posts, setPosts] = useState([] as any[]);
@@ -27,7 +32,7 @@ function App() {
   useEffect(() => {
     api
       .get("/")
-      .then((res: AxiosResponse<any, any>) => {
+      .then((res) => {
         setPosts(res.data.posts);
       })
       .catch((err) => console.log(err));
@@ -36,27 +41,33 @@ function App() {
   console.log(posts);
 
   return (
-    <main>
-      <Router>
-        <header>
-          <Navbar />
-        </header>
-        <Routes>
-          <Route path="/" element={<Home />}></Route>
-          <Route path="/users/login" element={<Login />}></Route>
-          <Route path="/users/signup" element={<Signup />}></Route>
-          <Route path="/about" element={<About />}></Route>
-          <Route path="/contact" element={<Contact />}></Route>
-          <Route path="/posts/:id" element={<Post />}></Route>
-          <Route path="/refresh" element={<Refresh />}></Route>
+    <>
+      <header>
+        <Navbar />
+      </header>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/users/login" element={<Login />} />
+          <Route path="/users/signup" element={<Signup />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/posts/:id" element={<Post />} />
+          <Route path="/refresh" element={<Refresh />} />
 
           {/* Protected Routes */}
-          <Route path="/admin" element={<Admin />}></Route>
-          <Route path="/admin/posts/create" element={<PostCreate />}></Route>
-          <Route path="*" element={<Missing />}></Route>
-        </Routes>
-      </Router>
-    </main>
+          <Route element={<RequireAuth />}>
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/posts/create" element={<PostCreate />} />
+            <Route path="/admin/create_role" element={<CreateRole />} />
+            <Route path="/logout" element={<Logout />} />
+          </Route>
+
+          {/* Catch all */}
+          <Route path="*" element={<Missing />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
 

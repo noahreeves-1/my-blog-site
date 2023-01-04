@@ -4,11 +4,10 @@ import { useAuthContext } from "../hooks/useAuth";
 export const RequireAuth = () => {
   const { auth } = useAuthContext();
   const location = useLocation();
-  return;
 
-  //   return auth?.username ? (
-  //     Outlet
-  //   ) : (
-  //     <Navigate to="/login" state={{ from: location }} replace />
-  //   );
+  return auth?.username ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/users/login" state={{ from: location }} replace />
+  );
 };

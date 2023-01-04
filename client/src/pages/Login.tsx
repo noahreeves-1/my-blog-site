@@ -30,6 +30,7 @@ function Login(): JSX.Element {
           username,
           password,
           accessToken,
+          roles: res.data.roles,
         });
 
         setUsername("");

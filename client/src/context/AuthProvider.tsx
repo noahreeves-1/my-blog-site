@@ -13,11 +13,12 @@ interface UserType {
   username: string;
   password: string;
   accessToken: string;
+  roles: string[];
 }
 
 interface UserContextType {
   auth?: UserType | null;
-  setAuth: (newAuth: UserType) => void;
+  setAuth: (newAuth: UserType | null) => void;
 }
 
 export const AuthProvider = ({ children }: Props) => {

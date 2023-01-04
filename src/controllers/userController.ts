@@ -41,7 +41,7 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    req.login(user, async (err) => {
+    req.login(user, (err) => {
       // * LOGIN FAILED
       if (err) {
         res.send(err);
@@ -55,7 +55,7 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
-        admin: user.admin,
+        roles: user.roles,
       };
 
       const accessToken = jwt.sign(
@@ -78,16 +78,24 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
       const update = { refresh_token: refreshToken };
 
       // * update refresh token with created refresh token
-      await User.findOneAndUpdate(filter, update);
+      User.findOneAndUpdate(
+        filter,
+        update,
+        (err: Error, updatedUser: IUser) => {
+          if (err) {
+            console.error(err);
+          }
 
-      res
-        .cookie("refresh_token", refreshToken, {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-          maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-        })
-        .json({ accessToken });
+          res
+            .cookie("refresh_token", refreshToken, {
+              httpOnly: true,
+              sameSite: "none",
+              secure: true,
+              maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+            })
+            .json({ accessToken, roles: updatedUser.roles });
+        }
+      );
     });
   })(req, res, next);
 };
@@ -237,7 +245,7 @@ export const admin_code_get = (req: Request, res: Response) => {
 };
 
 export const admin_code_post = [
-  body("admin_code", "Wrong code buddy")
+  body("admin_code")
     .trim()
     .escape()
     .custom((value: string) => {
@@ -250,25 +258,36 @@ export const admin_code_post = [
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.render("admin_code", {
-        title: "Enter Code",
-        errors: errors.array(),
-        user: req.user,
-      });
-      return;
+      return res
+        .status(401)
+        .json({ message: "Wrong code buddy", errors: errors });
     }
 
     if (req.user) {
-      User.findOneAndUpdate(
+      User.findOne(
         { username: req.user.username },
-        { admin: true },
-        (err: Error, user: IUser) => {
-          if (err) return next(err);
+        (err: Error, foundUser: IUser) => {
+          if (err) {
+            return console.error(err);
+          }
 
-          res.render("index", {
-            title: "Welcome",
-            user,
-          });
+          if (foundUser.roles.includes("5454")) {
+            return res
+              .status(400)
+              .json({ message: `User is already an admin!` });
+          }
+
+          User.findOneAndUpdate(
+            { username: req.user?.username },
+            { $push: { roles: "5454" } },
+            (err: Error, updatedUser: IUser) => {
+              if (err) return next(err);
+
+              res.status(200).json({
+                message: `Updated role of user "${updatedUser.username}"`,
+              });
+            }
+          );
         }
       );
     }
