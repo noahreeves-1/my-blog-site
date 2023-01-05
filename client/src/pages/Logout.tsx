@@ -11,12 +11,10 @@ export const Logout = () => {
 
   useEffect(() => {
     api
-      .get("/logout")
+      .get("/logout", { withCredentials: true })
       .then((res) => {
         console.log(res);
-        if (res.status === 204) {
-          setAuth(null);
-        }
+        setAuth(null);
         navigate("/");
       })
       .catch((err) => {

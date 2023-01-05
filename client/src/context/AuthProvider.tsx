@@ -10,9 +10,8 @@ interface Props {
 }
 
 interface UserType {
-  username: string;
-  password: string;
-  accessToken: string;
+  username: string | undefined;
+  accessToken: string | undefined;
   roles: string[];
 }
 

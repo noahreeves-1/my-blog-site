@@ -26,6 +26,9 @@ export const CreateRole = () => {
       })
       .catch((err) => {
         console.error(err);
+        if (err.response.status === 401) {
+          setFailureMsg("You are not authorized to create a user");
+        }
         setFailureMsg(err.response.data.message);
       });
   };

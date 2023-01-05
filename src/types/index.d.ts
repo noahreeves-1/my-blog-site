@@ -24,6 +24,7 @@ declare global {
       username: string;
       email: string;
       admin: boolean;
+      roles: string[];
     }
   }
 }

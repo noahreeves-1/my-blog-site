@@ -29,14 +29,8 @@ export const create_post_get = (req: Request, res: Response) => {
 };
 
 export const create_post_post = [
-  body("title", "Title must not be empty.")
-    .trim()
-    .isLength({ min: 1 })
-    .escape(),
-  body("content", "Content must not be empty.")
-    .trim()
-    .isLength({ min: 1 })
-    .escape(),
+  body("title", "Title must not be empty.").trim().isLength({ min: 1 }),
+  body("content", "Content must not be empty.").trim().isLength({ min: 1 }),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
 

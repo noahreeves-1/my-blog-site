@@ -28,7 +28,6 @@ function Login(): JSX.Element {
         const accessToken = res?.data?.accessToken;
         setAuth({
           username,
-          password,
           accessToken,
           roles: res.data.roles,
         });

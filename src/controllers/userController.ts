@@ -100,14 +100,14 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
   })(req, res, next);
 };
 
-export const logout_get = (req: Request, res: Response, next: NextFunction) => {
-  req.logOut((err) => {
-    if (err) {
-      return next(err);
-    }
-    res.redirect("/");
-  });
-};
+// export const logout_get = (req: Request, res: Response, next: NextFunction) => {
+//   req.logOut((err) => {
+//     if (err) {
+//       return next(err);
+//     }
+//     res.redirect("/");
+//   });
+// };
 
 //* SIGN UP
 export const user_signup_get = (req: Request, res: Response) => {
@@ -239,9 +239,6 @@ export const user_signup_post = [
 
 export const admin_code_get = (req: Request, res: Response) => {
   return res.json({ success: "You've been verified!" });
-  res.render("admin_code", {
-    title: "Enter Code",
-  });
 };
 
 export const admin_code_post = [
@@ -280,10 +277,12 @@ export const admin_code_post = [
           User.findOneAndUpdate(
             { username: req.user?.username },
             { $push: { roles: "5454" } },
+            { new: true },
             (err: Error, updatedUser: IUser) => {
               if (err) return next(err);
 
               res.status(200).json({
+                roles: updatedUser.roles,
                 message: `Updated role of user "${updatedUser.username}"`,
               });
             }

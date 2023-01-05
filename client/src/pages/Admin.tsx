@@ -1,11 +1,14 @@
 import api from "../util/axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../hooks/useAuth";
 
 const Admin = () => {
   const [admin_code, setAdminCode] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [failureMsg, setFailureMsg] = useState("");
+
+  const { auth, setAuth } = useAuthContext();
 
   const navigate = useNavigate();
 
@@ -24,6 +27,13 @@ const Admin = () => {
       .then((res) => {
         console.log(res);
         setSuccessMsg(res.data.message);
+        setAuth({
+          username: auth?.username,
+          accessToken: auth?.accessToken,
+          roles: res.data.roles,
+        });
+        console.log(auth);
+
         navigate("/");
       })
       .catch((err) => {

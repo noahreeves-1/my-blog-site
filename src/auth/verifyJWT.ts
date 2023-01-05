@@ -4,8 +4,14 @@ dotenv.config();
 import { Request, Response, NextFunction } from "express";
 
 export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.sendStatus(401); // Unauthorized
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (typeof authHeader !== "string") {
+    return res
+      .status(400)
+      .json({ message: "req.headers.Authorization is not type String" });
+  }
+
+  if (!authHeader?.startsWith("Bearer ")) return res.sendStatus(401); // Unauthorized
   console.log(authHeader); // Bearer token
 
   const token = authHeader.split(" ")[1];
@@ -17,6 +23,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     last_name: string;
     email: string;
     admin: boolean;
+    roles: string[];
   }
 
   const decodedToken: unknown = jwt.verify(
@@ -44,6 +51,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     last_name: decodedToken.last_name,
     email: decodedToken.email,
     admin: decodedToken.admin,
+    roles: decodedToken.roles,
   };
 
   next();

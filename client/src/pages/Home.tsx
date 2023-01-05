@@ -1,4 +1,3 @@
-import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../util/axios";
@@ -9,7 +8,7 @@ function Home(): JSX.Element {
   useEffect(() => {
     api
       .get("/")
-      .then((res: AxiosResponse<any, any>) => {
+      .then((res) => {
         setData(res.data.posts);
       })
       .catch((err) => console.log(err));
@@ -20,9 +19,9 @@ function Home(): JSX.Element {
       <div id="title" className="text-center text-2xl mt-4 font-bold">
         Welcome to my blog!
       </div>
-      {data.map((post) => (
+      {data?.map((post) => (
         <Link to={`/posts/${post._id}`} key={post._id}>
-          <div className="max-w-xl mx-auto bg-gray-200 my-4 rounded-md py-4 px-4">
+          <div className="max-w-xl mx-auto bg-gray-200 my-4 rounded-md py-4 px-4 text-left">
             <div className="text-xl font-bold">{post.title}</div>
             <div className="mt-2 overflow-hidden overflow-ellipsis whitespace-nowrap">
               {post.content}

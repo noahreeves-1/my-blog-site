@@ -1,7 +1,5 @@
 // * Downloaded libraries
 import { Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
-import api from "./util/axios";
 
 // * Layouts
 import Navbar from "./layouts/Navbar";
@@ -27,19 +25,6 @@ import PostCreate from "./pages/CreatePost";
 import { Logout } from "./pages/Logout";
 
 function App() {
-  const [posts, setPosts] = useState([] as any[]);
-
-  useEffect(() => {
-    api
-      .get("/")
-      .then((res) => {
-        setPosts(res.data.posts);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
-  console.log(posts);
-
   return (
     <>
       <header>

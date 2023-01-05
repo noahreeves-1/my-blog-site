@@ -15,7 +15,7 @@ import { logger } from "./shared/classes/logger";
 import { ErrorHandler } from "./shared/classes/error-handler";
 import { BaseError } from "./shared/classes/base-error";
 import { IUser, User } from "./models/user";
-import { verifyJWT } from "./auth/verifyJWT";
+// import { verifyJWT } from "./auth/verifyJWT";
 
 // * import routes from routes
 import indexRouter from "./routes/index";

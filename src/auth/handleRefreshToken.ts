@@ -10,6 +10,7 @@ interface MyToken {
   last_name: string;
   email: string;
   admin: boolean;
+  roles: string[];
 }
 
 export const handleRefreshToken = (req: Request, res: Response) => {
@@ -71,6 +72,7 @@ export const handleRefreshToken = (req: Request, res: Response) => {
         last_name: decoded.last_name,
         email: decoded.email,
         admin: decoded.admin,
+        roles: decoded.roles,
       };
 
       const accessToken = jwt.sign(
