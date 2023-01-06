@@ -17,6 +17,7 @@ export const verifyRoles = (...allowedRoles: string[]) => {
       .find((val) => val === true);
 
     if (!result) return res.sendStatus(401); // Unauthorized
+
     next();
   };
 };

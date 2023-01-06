@@ -62,7 +62,7 @@ export const login_post = (req: Request, res: Response, next: NextFunction) => {
         payload,
         `${process.env.ACCESS_SECRET_KEY}`,
         {
-          expiresIn: "10m",
+          expiresIn: "15s",
         }
       );
 

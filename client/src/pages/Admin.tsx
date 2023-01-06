@@ -23,7 +23,10 @@ const Admin = () => {
     };
 
     api
-      .post("/admin", body, { withCredentials: true })
+      .post("/admin", body, {
+        headers: { authorization: `Bearer ${auth?.accessToken}` },
+        withCredentials: true,
+      })
       .then((res) => {
         console.log(res);
         setSuccessMsg(res.data.message);

@@ -4,7 +4,7 @@ import { useAuthContext } from "../hooks/useAuth";
 function Navbar() {
   const { auth } = useAuthContext();
 
-  return auth?.roles.includes("2001") ? (
+  return auth?.roles?.includes("2001") ? (
     auth?.roles.includes("5454") ? (
       // * ADMIN
       <nav className="mx-auto py-2 px-4 bg-slate-800 text-white">

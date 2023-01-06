@@ -1,11 +1,14 @@
 import { useState } from "react";
 import api from "../util/axios";
+import { useAuthContext } from "../hooks/useAuth";
 
 export const CreateRole = () => {
   const [role_name, setRoleName] = useState("");
   const [role_id, setRoleId] = useState(0);
   const [successMsg, setSuccessMsg] = useState("");
   const [failureMsg, setFailureMsg] = useState("");
+
+  const { auth } = useAuthContext();
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,7 +22,10 @@ export const CreateRole = () => {
     };
 
     api
-      .post("/admin/create_role", body, { withCredentials: true })
+      .post("/admin/create_role", body, {
+        headers: { authorization: `Bearer ${auth?.accessToken}` },
+        withCredentials: true,
+      })
       .then((res) => {
         console.log(res);
         setSuccessMsg(res.data.message);

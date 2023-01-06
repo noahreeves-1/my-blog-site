@@ -9,10 +9,10 @@ interface Props {
   children?: ReactNode;
 }
 
-interface UserType {
+export interface UserType {
   username: string | undefined;
   accessToken: string | undefined;
-  roles: string[];
+  roles: string[] | undefined;
 }
 
 interface UserContextType {

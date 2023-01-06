@@ -1,13 +1,18 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../util/axios";
+import { useAxiosPrivate } from "../hooks/useAxiosPrivate";
+// import api from "../util/axios";
+import { useAuthContext } from "../hooks/useAuth";
 
 const PostCreate = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  const { auth } = useAuthContext();
   const navigate = useNavigate();
+
+  const apiPrivate = useAxiosPrivate();
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,10 +22,13 @@ const PostCreate = () => {
       content,
     };
 
-    api
-      .post("/admin/posts/create", body, { withCredentials: true })
+    apiPrivate
+      .post("/admin/posts/create", body, {
+        headers: { authorization: `Bearer ${auth?.accessToken}` },
+      })
       .then((res) => {
         console.log(res);
+        console.log(auth);
         navigate("/");
       })
       .catch((err) => {

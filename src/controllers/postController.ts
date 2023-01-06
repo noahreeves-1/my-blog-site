@@ -3,6 +3,7 @@ import { body, validationResult } from "express-validator";
 import { Post, IPost } from "../models/post";
 import { Comment } from "../models/comment";
 import { HydratedDocument } from "mongoose";
+import { IUser, User } from "../models/user";
 
 export const get_post_get = (
   req: Request,
@@ -35,23 +36,30 @@ export const create_post_post = [
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.render("/posts/create", {
-        title: "Create Post",
-        content: req.body.content,
-      });
+      return res
+        .status(400)
+        .json({ message: "Errors array in create_post_post is not empty" });
     }
 
-    const newPost: HydratedDocument<IPost> = new Post({
-      title: req.body.title,
-      content: req.body.content,
-      date_created: Date.now(),
-      author: req.user,
-    });
+    User.findOne(
+      { username: req.user?.username },
+      (err: Error, foundUser: IUser) => {
+        if (err) {
+          return next(err);
+        }
 
-    newPost.save((err) => {
-      if (err) return next(err);
+        const newPost: HydratedDocument<IPost> = new Post({
+          title: req.body.title,
+          content: req.body.content,
+          date_created: Date.now(),
+          author: foundUser,
+        });
 
-      res.redirect("/");
-    });
+        newPost.save((err) => {
+          if (err) return next(err);
+          return res.status(200).json({ message: "New post created!" });
+        });
+      }
+    );
   },
 ];
